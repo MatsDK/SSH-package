@@ -1,0 +1,24 @@
+{
+  "name": "ssh-package",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.js",
+  "scripts": {
+    "dev": "nodemon ./tests.ts ",
+    "start": "ts-node ./tests.ts ",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^16.0.0",
+    "@types/ssh2": "^0.5.46",
+    "nodemon": "^2.0.9",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "ssh2": "^1.1.0"
+  }
+}
