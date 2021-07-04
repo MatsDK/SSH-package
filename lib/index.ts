@@ -1,11 +1,16 @@
 import { Client as SSH2Client } from "ssh2";
-import { connectCB, ConnectionProps, eventFunction } from "./types";
+import {
+  connectCB,
+  ConnectionProps,
+  eventFunction,
+  ExecOptions,
+} from "./types";
 
 class Client {
   connectionProps: ConnectionProps;
+  connected: boolean;
   #conn: SSH2Client;
   #connecting: boolean;
-  connected: boolean;
   #events: Map<string, eventFunction>;
 
   constructor(
@@ -27,7 +32,6 @@ class Client {
 
   connect(cb?: connectCB) {
     if (this.#connecting) return;
-
     this.#connecting = true;
 
     this.#conn.connect(this.connectionProps);
@@ -45,8 +49,8 @@ class Client {
     this.#conn.on("ready", () => {
       if (cb) cb(null);
 
-      this.#triggerEvent("ready");
       this.connected = true;
+      this.#triggerEvent("ready");
     });
   }
 
@@ -59,6 +63,30 @@ class Client {
 
     if (thisEvent) thisEvent(...params);
   }
+
+  exec = (command: string, options?: ExecOptions) =>
+    new Promise((res, rej) => {
+      if (!this.connected) return rej("No connection found");
+
+      if (options?.cwd) command = `cd ${options.cwd} && ${command}`;
+
+      this.#conn.exec(command, (err, stream) => {
+        if (err) return rej(err);
+
+        stream.on("data", (chunk: Buffer) => {
+          res(chunk.toString());
+        });
+
+        stream.stderr.on("data", (err: any) => {
+          rej(err.toString());
+        });
+
+        stream.end();
+        stream.on("close", () => {
+          res("anything");
+        });
+      });
+    });
 
   upload = {
     file: () => {

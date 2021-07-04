@@ -9,3 +9,7 @@ export interface ConnectionProps {
 export type connectCB = (err: string | null) => void;
 
 export type eventFunction = (...params: any[]) => any;
+
+export interface ExecOptions {
+  cwd?: string;
+}

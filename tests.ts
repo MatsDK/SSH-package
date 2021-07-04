@@ -5,7 +5,7 @@ const conn = new Client(
     host: "192.168.0.227",
     username: "mats",
     password: "mats",
-    //     connect: false,
+    connect: false,
   }
   //   (err) => {
   //     if (err) throw err;
@@ -13,14 +13,18 @@ const conn = new Client(
   //   }
 );
 
-// conn.connect((err) => {
-//   if (err) throw err;
-//   console.log("Ready");
-// });
+conn.connect();
 
-conn.on("ready", () => {
+conn.on("ready", async () => {
   console.log("ready");
-  conn.download.files();
+
+  try {
+    const res = await conn.exec("tree", { cwd: "" });
+
+    console.log(res);
+  } catch (e) {
+    console.log("error: ", e);
+  }
 });
 
 // console.log(conn);
