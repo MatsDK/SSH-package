@@ -7,9 +7,13 @@ export interface ConnectionProps {
 }
 
 export type connectCB = (err: string | null) => void;
+export type GetFileCB = connectCB;
 
 export type eventFunction = (...params: any[]) => any;
 
 export interface ExecOptions {
   cwd?: string;
+  encoding?: BufferEncoding;
 }
+
+export type CommandOuput = { stdout: string[]; stderr: string[] };
