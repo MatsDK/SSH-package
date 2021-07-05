@@ -61,6 +61,8 @@ class Client {
       if (cb) cb(null);
 
       this.download.setConn(this.#conn);
+      this.upload.setConn(this.#conn);
+
       this.connected = true;
       this.#triggerEvent("ready");
 

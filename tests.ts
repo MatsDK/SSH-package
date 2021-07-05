@@ -1,4 +1,5 @@
 import { Client } from "./index";
+const PATH = __dirname + "/test/";
 
 const conn = new Client(
   {
@@ -44,14 +45,19 @@ conn.on("ready", async () => {
   //     console.log(res);
   //   })
   //   .catch((err) => {
-  //     console.log("error: ", err);
+  //     console.log("Error: ", err);
   //   });
 
+  // try {
+  //   const res = await conn.download.file("/home/mats/test.txt", PATH + "x.txt");
+
+  //   console.log(res);
+  // } catch (error) {
+  //   console.log("Error: ", error);
+  // }
+
   try {
-    const res = await conn.download.file(
-      "/home/mats/test.txt",
-      __dirname + "/x.txt"
-    );
+    const res = await conn.upload.file(PATH + "x.txt", "/home/mats/test1.txt");
 
     console.log(res);
   } catch (error) {

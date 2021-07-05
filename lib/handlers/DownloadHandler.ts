@@ -1,10 +1,6 @@
 import { Client, SFTPWrapper } from "ssh2";
 import unixify from "unixify";
-import { GetFileCB } from "../types";
-
-interface TransferFileOptions {
-  SFTPConn?: SFTPWrapper;
-}
+import { GetFileCB, TransferFileOptions } from "../types";
 
 export class DownloadHandler {
   conn: null | Client;
@@ -43,15 +39,14 @@ export class DownloadHandler {
 
       const sftp = options?.SFTPConn || (await this.getSFTP());
 
-      const getFile = () => {
-        return new Promise((res) => {
-          sftp.fastGet(unixify(remotePath), unixify(localPath), (err) => {
+      const getFile = () =>
+        new Promise((res) => {
+          sftp.fastGet(unixify(remotePath), unixify(localPath), (err: any) => {
             if (err) return res(err);
 
             res(false);
           });
         });
-      };
 
       const err = await getFile();
 
@@ -66,13 +61,16 @@ export class DownloadHandler {
       });
     });
   }
-  files = () => {
+
+  async files() {
     console.log("download files");
-  };
-  directory = () => {
+  }
+
+  async directory() {
     console.log("download directory");
-  };
-  directories = () => {
+  }
+
+  async directories() {
     console.log("download diretories");
-  };
+  }
 }
