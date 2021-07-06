@@ -1,6 +1,6 @@
 import { Client, SFTPWrapper } from "ssh2";
-import unixify from "unixify";
-import { GetFileCB, TransferFileOptions } from "../types";
+import { GetFileCB, TransferFileOptions, TransferFiles } from "../types";
+import { unixify } from "./helpers";
 
 export class DownloadHandler {
   conn: null | Client;
@@ -62,15 +62,44 @@ export class DownloadHandler {
     });
   }
 
-  async files() {
-    console.log("download files");
+  async files(
+    paths: TransferFiles,
+    options?: TransferFileOptions | GetFileCB,
+    cb?: GetFileCB
+  ) {
+    return new Promise(async (resolve, rej) => {
+      if (typeof options == "function") {
+        cb = options;
+        options = {};
+      }
+
+      const sftp: SFTPWrapper = options?.SFTPConn || (await this.getSFTP());
+      const promiseList: Promise<any>[] = [];
+
+      for (const path of paths) {
+        promiseList.push(
+          this.file(unixify(path.remote), unixify(path.local), {
+            SFTPConn: sftp,
+          })
+        );
+      }
+
+      await Promise.all(promiseList).catch((e) => {
+        if (cb) return cb(e);
+        rej(e);
+      });
+
+      sftp.end();
+      sftp.on("close", () => {
+        console.log("close");
+      });
+
+      if (cb) cb(null);
+      resolve("Success");
+    });
   }
 
-  async directory() {
-    console.log("download directory");
-  }
+  async directory() {}
 
-  async directories() {
-    console.log("download diretories");
-  }
+  async directories() {}
 }

@@ -49,19 +49,56 @@ conn.on("ready", async () => {
   //   });
 
   // try {
-  //   const res = await conn.download.file("/home/mats/test.txt", PATH + "x.txt");
+  //   const res = await conn.download.file(
+  //     "/home/mats/test1.txt",
+  //     PATH + "test.txt"
+  //   );
 
   //   console.log(res);
   // } catch (error) {
   //   console.log("Error: ", error);
   // }
 
+  // try {
+  //   const res = await conn.upload.file(
+  //     PATH + "test.txt",
+  //     "/home/mats/tests/fjdslk.txt"
+  //   );
+
+  //   console.log(res);
+  // } catch (error) {
+  //   console.log("Error: ", error);
+  // }
+
+  // conn.upload
+  //   .file(PATH + "test.txt", "/home/mats/tests/fjdslk.txt")
+  //   .then((res) => {
+  //     console.log(res);
+  //   })
+  //   .catch((err) => {
+  //     console.log("Error: ", err);
+  //   });
+
+  // try {
+  //   const res = await conn.download.files([
+  //     { remote: "/home/mats/tests/test1.txt", local: PATH + "test1.txt" },
+  //     { remote: "/home/mats/tests/test1.txt", local: PATH + "test2.txt" },
+  //   ]);
+
+  //   console.log(res);
+  // } catch (err) {
+  //   console.log("Error: ", err);
+  // }
+
   try {
-    const res = await conn.upload.file(PATH + "x.txt", "/home/mats/test1.txt");
+    const res = await conn.upload.files([
+      { remote: "/home/mats/tests/test11.txt", local: PATH + "test1.txt" },
+      { remote: "/home/mats/tests/test21.txt", local: PATH + "test2.txt" },
+    ]);
 
     console.log(res);
-  } catch (error) {
-    console.log("Error: ", error);
+  } catch (err) {
+    console.log("Error: ", err);
   }
 });
 

@@ -22,3 +22,5 @@ export type CommandOuput = { stdout: string[]; stderr: string[] };
 export interface TransferFileOptions {
   SFTPConn?: SFTPWrapper;
 }
+
+export type TransferFiles = { remote: string; local: string }[];

@@ -1,6 +1,6 @@
 import { Client, SFTPWrapper } from "ssh2";
-import unixify from "unixify";
-import { GetFileCB, PutFileCB, TransferFileOptions } from "../types";
+import { PutFileCB, TransferFileOptions, TransferFiles } from "../types";
+import { unixify } from "./helpers";
 
 export class UploadHandler {
   conn: Client | null;
@@ -62,7 +62,43 @@ export class UploadHandler {
     });
   }
 
-  async files() {}
+  async files(
+    paths: TransferFiles,
+    options?: TransferFileOptions | PutFileCB,
+    cb?: PutFileCB
+  ) {
+    return new Promise(async (resolve, rej) => {
+      if (typeof options == "function") {
+        cb = options;
+        options = {};
+      }
+
+      const sftp: SFTPWrapper = options?.SFTPConn || (await this.getSFTP());
+      const promiseList: Promise<any>[] = [];
+
+      for (const path of paths) {
+        promiseList.push(
+          this.file(unixify(path.local), unixify(path.remote), {
+            SFTPConn: sftp,
+          })
+        );
+      }
+
+      await Promise.all(promiseList).catch((e) => {
+        console.log(e);
+        if (cb) return cb(e);
+        rej(e);
+      });
+
+      sftp.end();
+      sftp.on("close", () => {
+        console.log("end");
+      });
+
+      if (cb) cb(null);
+      resolve("Success");
+    });
+  }
 
   async directory() {}
 
