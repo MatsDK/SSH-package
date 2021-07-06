@@ -1,6 +1,15 @@
 import { Client, SFTPWrapper } from "ssh2";
-import { GetFileCB, TransferFileOptions, TransferFiles } from "../types";
-import { unixify } from "./helpers";
+import scanDirectory from "sb-scandir";
+import path from "path";
+import fs from "fs";
+import {
+  GetDirCB,
+  GetFileCB,
+  TransferDirectoryOptions,
+  TransferFileOptions,
+  TransferFiles,
+} from "../types";
+import { getRelativePaths, unixify } from "./helpers";
 
 export class DownloadHandler {
   conn: null | Client;
@@ -99,7 +108,88 @@ export class DownloadHandler {
     });
   }
 
-  async directory() {}
+  directory = async (
+    remotePath: string,
+    localPath: string,
+    options?: TransferDirectoryOptions | GetDirCB,
+    cb?: GetDirCB
+  ) =>
+    new Promise(async (res, rej) => {
+      if (typeof options == "function") {
+        cb = options;
+        options = {};
+      }
+
+      const sftp: SFTPWrapper = await this.getSFTP();
+
+      const scan = await scanDirectory(remotePath, {
+        fileSystem: {
+          basename: (file_path) => path.posix.basename(file_path),
+          join: (file_path1, file_path2) =>
+            path.posix.join(file_path1, file_path2),
+          readdir: (path) =>
+            new Promise((resolve, rej) => {
+              sftp.readdir(path, (err, res) => {
+                if (err) rej(err);
+                else resolve(res.map((item) => item.filename));
+              });
+            }),
+          stat: (path) =>
+            new Promise((resolve, rej) => {
+              sftp.stat(path, (err, res) => {
+                if (err) rej(err);
+                else resolve(res as any);
+              });
+            }),
+        },
+      });
+
+      const [files, dirs]: string[][] = [
+        getRelativePaths(scan.files, remotePath),
+        getRelativePaths(scan.directories, remotePath),
+      ];
+
+      const directories: string[][] = dirs
+        .map((_: string) =>
+          unixify(_)
+            .split("/")
+            .filter((_: string) => !!_)
+        )
+        .sort((a: string[], b: string[]) => a.length - b.length);
+
+      try {
+        directories.forEach((_) => {
+          const thisPath = path.join(localPath, _.join("/"));
+
+          if (!fs.existsSync(thisPath))
+            fs.mkdirSync(path.join(localPath, _.join("/")));
+        });
+
+        const promiseList: Promise<any>[] = [];
+
+        files.forEach((file: string) => {
+          const localFile = unixify(path.join(localPath, file)),
+            remoteFile = unixify(path.join(remotePath, file));
+
+          promiseList.push(
+            this.file(remoteFile, localFile, { SFTPConn: sftp })
+          );
+        });
+
+        await Promise.all(promiseList);
+      } catch (e) {
+        if (cb) return cb(e, null);
+        rej(e);
+      }
+
+      const ret: string = `Downloaded: ${scan.directories.length} diretor${
+        scan.directories.length == 1 ? "y" : "ies"
+      }, ${scan.files.length} file${scan.files.length == 1 ? "" : "s"}`;
+
+      if (cb) cb(null, ret);
+      res(ret);
+      return ret;
+    });
 
   async directories() {}
 }

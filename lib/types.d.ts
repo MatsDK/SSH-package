@@ -1,3 +1,5 @@
+import { SFTPWrapper } from "ssh2";
+
 export interface ConnectionProps {
   host: string;
   port?: number;
@@ -9,6 +11,7 @@ export interface ConnectionProps {
 export type connectCB = (err: string | null) => void;
 export type GetFileCB = connectCB;
 export type PutFileCB = connectCB;
+export type GetDirCB = (err: string | null, res: string | null) => void;
 
 export type eventFunction = (...params: any[]) => any;
 
@@ -24,3 +27,7 @@ export interface TransferFileOptions {
 }
 
 export type TransferFiles = { remote: string; local: string }[];
+
+export interface TransferDirectoryOptions {
+  SFTPConn?: SFTPWrapper;
+}

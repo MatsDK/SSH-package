@@ -20,7 +20,7 @@ conn.on("ready", async () => {
   console.log("ready");
 
   // conn
-  //   .exec("tree -J")
+  //   .exec("ifconfig")
   //   .then((res) => {
   //     console.log(res);
   //   })
@@ -90,16 +90,33 @@ conn.on("ready", async () => {
   //   console.log("Error: ", err);
   // }
 
-  try {
-    const res = await conn.upload.files([
-      { remote: "/home/mats/tests/test11.txt", local: PATH + "test1.txt" },
-      { remote: "/home/mats/tests/test21.txt", local: PATH + "test2.txt" },
-    ]);
+  // try {
+  //   const res = await conn.upload.files([
+  //     { remote: "/home/mats/tests/test11.txt", local: PATH + "test1.txt" },
+  //     { remote: "/home/mats/tests/test21.txt", local: PATH + "test2.txt" },
+  //   ]);
 
-    console.log(res);
-  } catch (err) {
-    console.log("Error: ", err);
-  }
+  //   console.log(res);
+  // } catch (err) {
+  //   console.log("Error: ", err);
+  // }
+
+  // try {
+  //   const res = await conn.download.directory("/home/mats/tests", PATH + "x/");
+
+  //   console.log(res);
+  // } catch (e) {
+  //   console.log("Error: ", e);
+  // }
+
+  conn.download
+    .directory("/home/", PATH + "x")
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((e) => {
+      console.log("Error: ", e);
+    });
 });
 
 conn.on("timeout", () => {
