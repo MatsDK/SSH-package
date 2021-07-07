@@ -109,22 +109,44 @@ conn.on("ready", async () => {
   //   console.log("Error: ", e);
   // }
 
-  conn.download
-    .directory("/home/mats/tests/", PATH + "x")
-    .then((res) => {
-      console.log(res);
-    })
-    .catch((e) => {
-      console.log("Error: ", e);
-    });
+  // conn.download
+  //   .directory("/home/mats/tests/", PATH + "x")
+  //   .then((res) => {
+  //     console.log(res);
+  //   })
+  //   .catch((e) => {
+  //     console.log("Error: ", e);
+  //   });
 
   // try {
-  //   const res = await conn.upload.directory(PATH + "z/", "/home/mats/upload");
+  //   const res = await conn.upload.directory(PATH, "/home/mats/upload");
 
   //   console.log(res);
   // } catch (err) {
   //   console.log("Error: ", err);
   // }
+
+  // try {
+  //   const res = await conn.download.directories([
+  //     { remote: "/home/mats/upload/x", local: PATH + "x" },
+  //     { remote: "/home/mats/upload/z", local: PATH + "y" },
+  //   ]);
+
+  //   console.log(res);
+  // } catch (error) {
+  //   console.log("Error", error);
+  // }
+
+  try {
+    const res = await conn.upload.directories([
+      { remote: "/home/mats/upload/a", local: PATH + "x" },
+      { remote: "/home/mats/upload/b", local: PATH + "y" },
+    ]);
+
+    console.log(res);
+  } catch (error) {
+    console.log("Error", error);
+  }
 });
 
 conn.on("timeout", () => {
