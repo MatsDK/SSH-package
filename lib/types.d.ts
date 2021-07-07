@@ -12,6 +12,7 @@ export type connectCB = (err: string | null) => void;
 export type GetFileCB = connectCB;
 export type PutFileCB = connectCB;
 export type GetDirCB = (err: string | null, res: string | null) => void;
+export type PutDirCB = GetDirCB;
 
 export type eventFunction = (...params: any[]) => any;
 

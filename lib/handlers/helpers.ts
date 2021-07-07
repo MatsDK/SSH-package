@@ -1,4 +1,5 @@
 import path from "path";
+
 export const unixify = (path: string): string => path.split("\\").join("/");
 
 export const getRelativePaths = (

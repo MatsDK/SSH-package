@@ -110,13 +110,21 @@ conn.on("ready", async () => {
   // }
 
   conn.download
-    .directory("/home/", PATH + "x")
+    .directory("/home/mats/tests/", PATH + "x")
     .then((res) => {
       console.log(res);
     })
     .catch((e) => {
       console.log("Error: ", e);
     });
+
+  // try {
+  //   const res = await conn.upload.directory(PATH + "z/", "/home/mats/upload");
+
+  //   console.log(res);
+  // } catch (err) {
+  //   console.log("Error: ", err);
+  // }
 });
 
 conn.on("timeout", () => {

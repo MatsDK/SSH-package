@@ -1,6 +1,14 @@
+import path from "path";
+import scanDirectory from "sb-scandir";
 import { Client, SFTPWrapper } from "ssh2";
-import { PutFileCB, TransferFileOptions, TransferFiles } from "../types";
-import { unixify } from "./helpers";
+import {
+  PutDirCB,
+  PutFileCB,
+  TransferDirectoryOptions,
+  TransferFileOptions,
+  TransferFiles,
+} from "../types";
+import { getRelativePaths, unixify } from "./helpers";
 
 export class UploadHandler {
   conn: Client | null;
@@ -25,13 +33,13 @@ export class UploadHandler {
     });
   }
 
-  async file(
+  file = async (
     localPath: string,
     remotePath: string,
     options?: TransferFileOptions | PutFileCB,
     cb?: PutFileCB
-  ) {
-    return new Promise(async (res, rej) => {
+  ) =>
+    new Promise(async (res, rej) => {
       if (typeof options == "function") {
         cb = options;
         options = {};
@@ -60,14 +68,13 @@ export class UploadHandler {
         res("Success");
       });
     });
-  }
 
-  async files(
+  files = async (
     paths: TransferFiles,
     options?: TransferFileOptions | PutFileCB,
     cb?: PutFileCB
-  ) {
-    return new Promise(async (resolve, rej) => {
+  ) =>
+    new Promise(async (resolve, rej) => {
       if (typeof options == "function") {
         cb = options;
         options = {};
@@ -98,9 +105,83 @@ export class UploadHandler {
       if (cb) cb(null);
       resolve("Success");
     });
-  }
 
-  async directory() {}
+  directory = async (
+    localPath: string,
+    remotePath: string,
+    options?: TransferDirectoryOptions | PutDirCB,
+    cb?: PutDirCB
+  ) =>
+    new Promise(async (res, rej) => {
+      if (typeof options == "function") {
+        cb = options;
+        options = {};
+      }
+
+      const sftp = options?.SFTPConn || (await this.getSFTP());
+
+      const scan = await scanDirectory(unixify(localPath));
+
+      const [files, dirs]: string[][] = [
+        getRelativePaths(scan.files, localPath),
+        getRelativePaths(scan.directories, localPath),
+      ];
+      const directories: string[][] = dirs
+        .map((_: string) =>
+          unixify(_)
+            .split("/")
+            .filter((_: string) => !!_)
+        )
+        .sort((a: string[], b: string[]) => a.length - b.length);
+
+      try {
+        const promiseList: Promise<any>[] = [];
+
+        directories.forEach((_: string[]) => {
+          const dirPath: string = unixify(path.join(remotePath, _.join("/")));
+
+          promiseList.push(
+            new Promise((res, rej) => {
+              sftp.exists(dirPath, (exists) => {
+                if (!exists)
+                  sftp.mkdir(dirPath, (err) => {
+                    if (err) rej(err);
+                    else res("Success");
+                  });
+                else res("Succes");
+              });
+            })
+          );
+        });
+
+        await Promise.all(promiseList);
+
+        await this.files(
+          files.map((_: string) => ({
+            local: unixify(path.join(localPath, _)),
+            remote: unixify(path.join(remotePath, _)),
+          })),
+          { SFTPConn: sftp }
+        );
+      } catch (err) {
+        if (cb) return cb(err, null);
+        rej(err);
+      }
+
+      const ret: string = `Uploaded: ${scan.directories.length} diretor${
+        scan.directories.length == 1 ? "y" : "ies"
+      }, ${scan.files.length} file${scan.files.length != 1 ? "s" : ""}`;
+
+      sftp.end();
+      // sftp.on("close", () => {
+      //   console.log("Close");
+      // });
+
+      if (cb) cb(null, ret);
+      res(ret);
+
+      return ret;
+    });
 
   async directories() {}
 }

@@ -161,22 +161,16 @@ export class DownloadHandler {
         directories.forEach((_) => {
           const thisPath = path.join(localPath, _.join("/"));
 
-          if (!fs.existsSync(thisPath))
-            fs.mkdirSync(path.join(localPath, _.join("/")));
+          if (!fs.existsSync(thisPath)) fs.mkdirSync(thisPath);
         });
 
-        const promiseList: Promise<any>[] = [];
-
-        files.forEach((file: string) => {
-          const localFile = unixify(path.join(localPath, file)),
-            remoteFile = unixify(path.join(remotePath, file));
-
-          promiseList.push(
-            this.file(remoteFile, localFile, { SFTPConn: sftp })
-          );
-        });
-
-        await Promise.all(promiseList);
+        await this.files(
+          files.map((_: string) => ({
+            local: unixify(path.join(localPath, _)),
+            remote: unixify(path.join(remotePath, _)),
+          })),
+          { SFTPConn: sftp }
+        );
       } catch (e) {
         if (cb) return cb(e, null);
         rej(e);
@@ -184,10 +178,16 @@ export class DownloadHandler {
 
       const ret: string = `Downloaded: ${scan.directories.length} diretor${
         scan.directories.length == 1 ? "y" : "ies"
-      }, ${scan.files.length} file${scan.files.length == 1 ? "" : "s"}`;
+      }, ${scan.files.length} file${scan.files.length != 1 ? "s" : ""}`;
+
+      sftp.end();
+      // sftp.on("close", () => {
+      //   console.log("Close");
+      // });
 
       if (cb) cb(null, ret);
       res(ret);
+
       return ret;
     });
 
