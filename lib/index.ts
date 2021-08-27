@@ -1,14 +1,17 @@
-import { Client as SSH2Client } from "ssh2";
+import { Client as SSH2Client, SFTPWrapper } from "ssh2";
 import { DownloadHandler } from "./handlers/DownloadHandler";
+import { getSFTP, unixify } from "./handlers/helpers";
 import { UploadHandler } from "./handlers/UploadHandler";
 import {
   CommandOuput,
   connectCB,
   ConnectionProps,
   eventFunction,
+  Events,
+  execCB,
   ExecOptions,
+  mkdirCB,
 } from "./types";
-type execCB = (err: string | null, res: string | null) => void;
 
 class Client {
   connectionProps: ConnectionProps;
@@ -82,7 +85,7 @@ class Client {
     }, 5000);
   }
 
-  on(eventName: string, func: eventFunction): any {
+  on(eventName: Events, func: eventFunction): any {
     this.#events.set(eventName, func);
   }
 
@@ -140,6 +143,29 @@ class Client {
 
     return res.stdout;
   }
+
+  mkdir = async (
+    path: string,
+    options?: { SFTPConn?: SFTPWrapper } | mkdirCB,
+    cb?: mkdirCB
+  ) =>
+    new Promise(async (res, rej) => {
+      if (typeof options == "function") {
+        cb = options;
+        options = {};
+      }
+
+      const sftp = await getSFTP(this.#conn);
+
+      sftp.mkdir(unixify(path), (err) => {
+        if (err) rej(err);
+        else res(true);
+
+        console.log("end");
+
+        sftp.end();
+      });
+    });
 }
 
 export { Client };

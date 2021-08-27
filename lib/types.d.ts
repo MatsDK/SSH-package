@@ -36,3 +36,8 @@ export type TransferDirectories = { remote: string; local: string }[];
 export interface TransferDirectoryOptions {
   SFTPConn?: SFTPWrapper;
 }
+
+export type execCB = (err: string | null, res: string | null) => void;
+export type Events = "timeout" | "ready";
+
+export type mkdirCB = (err: string | null) => void;

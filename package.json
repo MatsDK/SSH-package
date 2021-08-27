@@ -2,15 +2,19 @@
   "name": "ssh-package",
   "version": "1.0.0",
   "description": "",
-  "main": "src/main.js",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon ./tests.ts ",
     "start": "ts-node ./tests.ts ",
     "build": "tsc"
   },
+  "types": "dist",
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "repository": {
+    "url": "https://github.com/MatsDK/SSH-package.git"
+  },
   "devDependencies": {
     "@types/node": "^16.0.0",
     "@types/ssh2": "^0.5.46",
