@@ -4,11 +4,15 @@ Small package to transfer data with ssh using SFTP.
 
 ## Installation
 
-```shell
-# npm
-$ npm i ssh-package
+**Using npm**
 
-# yarn
+```shell
+$ npm i ssh-package
+```
+
+**Using yarn**
+
+```shell
 $ yarn add ssh-package
 ```
 
