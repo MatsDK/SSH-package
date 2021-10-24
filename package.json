@@ -1,6 +1,6 @@
 {
   "name": "ssh-package",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -16,14 +16,14 @@
     "url": "https://github.com/MatsDK/SSH-package.git"
   },
   "devDependencies": {
-    "@types/node": "^16.0.0",
-    "@types/ssh2": "^0.5.46",
-    "nodemon": "^2.0.9",
-    "ts-node": "^10.0.0",
-    "typescript": "^4.3.5"
+    "@types/node": "^16.7.2",
+    "@types/ssh2": "^0.5.47",
+    "nodemon": "^2.0.12",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.2"
   },
   "dependencies": {
     "sb-scandir": "^3.1.0",
-    "ssh2": "^1.1.0"
+    "ssh2": "^1.3.0"
   }
 }

@@ -158,8 +158,13 @@ class Client {
       const sftp = await getSFTP(this.#conn);
 
       sftp.mkdir(unixify(path), (err) => {
-        if (err) rej(err);
-        else res(true);
+        if (err) {
+          if (cb) cb(err);
+          rej(err);
+        } else {
+          if (cb) cb(null);
+          res(true);
+        }
 
         console.log("end");
 
