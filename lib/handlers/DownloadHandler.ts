@@ -64,7 +64,7 @@ export class DownloadHandler {
       if (!options?.SFTPConn) {
         sftp.end();
         sftp.on("close", () => {
-          console.log("close");
+          // console.log("close");
         });
       }
 
@@ -106,7 +106,7 @@ export class DownloadHandler {
       if (!options?.SFTPConn) {
         sftp.end();
         sftp.on("close", () => {
-          console.log("close");
+          // console.log("close");
         });
       }
 
@@ -182,14 +182,13 @@ export class DownloadHandler {
         rej(e);
       }
 
-      const ret: string = `Downloaded: ${scan.directories.length} diretor${
-        scan.directories.length == 1 ? "y" : "ies"
-      }, ${scan.files.length} file${scan.files.length != 1 ? "s" : ""}`;
+      const ret: string = `Downloaded: ${scan.directories.length} diretor${scan.directories.length == 1 ? "y" : "ies"
+        }, ${scan.files.length} file${scan.files.length != 1 ? "s" : ""}`;
 
       if (!options?.SFTPConn) {
         sftp.end();
         sftp.on("close", () => {
-          console.log("Close");
+          // console.log("Close");
         });
       }
 
@@ -228,7 +227,7 @@ export class DownloadHandler {
       if (options?.SFTPConn) {
         sftp.end();
         sftp.on("close", () => {
-          console.log("Close");
+          // console.log("Close");
         });
       }
 

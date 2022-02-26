@@ -63,7 +63,7 @@ export class UploadHandler {
       if (!options?.SFTPConn) {
         sftp.end();
         sftp.on("close", () => {
-          console.log("Close");
+          // console.log("Close");
         });
       }
 
@@ -104,7 +104,7 @@ export class UploadHandler {
       if (!options?.SFTPConn) {
         sftp.end();
         sftp.on("close", () => {
-          console.log("end");
+          // console.log("end");
         });
       }
 
@@ -174,14 +174,13 @@ export class UploadHandler {
         rej(err);
       }
 
-      const ret: string = `Uploaded: ${scan.directories.length} diretor${
-        scan.directories.length == 1 ? "y" : "ies"
-      }, ${scan.files.length} file${scan.files.length != 1 ? "s" : ""}`;
+      const ret: string = `Uploaded: ${scan.directories.length} diretor${scan.directories.length == 1 ? "y" : "ies"
+        }, ${scan.files.length} file${scan.files.length != 1 ? "s" : ""}`;
 
       if (!options?.SFTPConn) {
         sftp.end();
         sftp.on("close", () => {
-          console.log("Close");
+          // console.log("Close");
         });
       }
 
@@ -220,7 +219,7 @@ export class UploadHandler {
       if (!options?.SFTPConn) {
         sftp.end();
         sftp.on("close", () => {
-          console.log("Close");
+          // console.log("Close");
         });
       }
 
